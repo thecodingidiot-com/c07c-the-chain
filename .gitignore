@@ -1,0 +1,4 @@
+*.o
+*.a
+c07shell
+test_parser
