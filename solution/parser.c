@@ -21,12 +21,10 @@ static void argbuf_push(t_argbuf *b, char *word)
     char    **bigger;
     size_t  i;
 
-    if (b->len + 2 >= b->cap)
-    {
+    if (b->len + 2 >= b->cap) {
         bigger = tci_calloc(b->cap * 2, sizeof(char *));
         i = 0;
-        while (i < b->len)
-        {
+        while (i < b->len) {
             bigger[i] = b->data[i];
             i++;
         }
@@ -100,15 +98,12 @@ static t_node *parse_simple_command(t_token **cur)
     argbuf_init(&args);
     rhead = NULL;
     rtail = NULL;
-    while (*cur && ((*cur)->type == TOK_WORD || is_redir_tok((*cur)->type)))
-    {
-        if ((*cur)->type == TOK_WORD)
-        {
+    while (*cur && ((*cur)->type == TOK_WORD || is_redir_tok((*cur)->type))) {
+        if ((*cur)->type == TOK_WORD) {
             argbuf_push(&args, tci_strdup((*cur)->value));
             *cur = (*cur)->next;
         }
-        else
-        {
+        else {
             if (!(*cur)->next || (*cur)->next->type != TOK_WORD)
                 return (NULL);
             append_redir(&rhead, &rtail, new_redir((*cur)->type, (*cur)->next->value));
@@ -127,8 +122,7 @@ static t_node *parse_unit(t_token **cur)
 {
     t_node  *inner;
 
-    if (*cur && (*cur)->type == TOK_LPAREN)
-    {
+    if (*cur && (*cur)->type == TOK_LPAREN) {
         *cur = (*cur)->next;
         inner = parse_and_or(cur);
         if (!inner)
@@ -150,8 +144,7 @@ static t_node *parse_pipeline(t_token **cur)
     left = parse_unit(cur);
     if (!left)
         return (NULL);
-    while (*cur && (*cur)->type == TOK_PIPE)
-    {
+    while (*cur && (*cur)->type == TOK_PIPE) {
         *cur = (*cur)->next;
         right = parse_unit(cur);
         if (!right)
@@ -171,8 +164,7 @@ static t_node *parse_and_or(t_token **cur)
     left = parse_pipeline(cur);
     if (!left)
         return (NULL);
-    while (*cur && ((*cur)->type == TOK_AND || (*cur)->type == TOK_OR))
-    {
+    while (*cur && ((*cur)->type == TOK_AND || (*cur)->type == TOK_OR)) {
         type = (*cur)->type == TOK_AND ? NODE_AND : NODE_OR;
         *cur = (*cur)->next;
         right = parse_pipeline(cur);
@@ -190,8 +182,7 @@ t_node *parse(t_token *tokens)
 
     cur = tokens;
     root = parse_and_or(&cur);
-    if (!root || cur != NULL)
-    {
+    if (!root || cur != NULL) {
         if (root)
             free_node(root);
         return (NULL);
@@ -203,8 +194,7 @@ static void free_redirs(t_redir *r)
 {
     t_redir *next;
 
-    while (r)
-    {
+    while (r) {
         next = r->next;
         free(r->target);
         free(r);
@@ -218,11 +208,9 @@ void free_node(t_node *node)
 
     if (!node)
         return;
-    if (node->type == NODE_CMD)
-    {
+    if (node->type == NODE_CMD) {
         i = 0;
-        while (node->argv && node->argv[i])
-        {
+        while (node->argv && node->argv[i]) {
             free(node->argv[i]);
             i++;
         }

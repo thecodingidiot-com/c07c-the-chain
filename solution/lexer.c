@@ -20,8 +20,7 @@ static void buf_push(t_buf *b, char c)
 {
     char    *bigger;
 
-    if (b->len + 2 >= b->cap)
-    {
+    if (b->len + 2 >= b->cap) {
         bigger = tci_calloc(b->cap * 2, 1);
         tci_memcpy(bigger, b->data, b->len);
         free(b->data);
@@ -49,11 +48,9 @@ static int lex_word(char const *s, int *i, t_buf *out)
     while (s[*i] && !tci_isspace((unsigned char)s[*i])
         && !is_operator_char(s[*i]))
     {
-        if (s[*i] == '\'')
-        {
+        if (s[*i] == '\'') {
             (*i)++;
-            while (s[*i] && s[*i] != '\'')
-            {
+            while (s[*i] && s[*i] != '\'') {
                 buf_push(out, s[*i]);
                 (*i)++;
             }
@@ -61,11 +58,9 @@ static int lex_word(char const *s, int *i, t_buf *out)
                 return (-1);
             (*i)++;
         }
-        else if (s[*i] == '"')
-        {
+        else if (s[*i] == '"') {
             (*i)++;
-            while (s[*i] && s[*i] != '"')
-            {
+            while (s[*i] && s[*i] != '"') {
                 if (s[*i] == '\\' && s[*i + 1] && tci_strchr("\"\\$`", s[*i + 1]))
                     (*i)++;
                 buf_push(out, s[*i]);
@@ -75,14 +70,12 @@ static int lex_word(char const *s, int *i, t_buf *out)
                 return (-1);
             (*i)++;
         }
-        else if (s[*i] == '\\' && s[*i + 1])
-        {
+        else if (s[*i] == '\\' && s[*i + 1]) {
             (*i)++;
             buf_push(out, s[*i]);
             (*i)++;
         }
-        else
-        {
+        else {
             buf_push(out, s[*i]);
             (*i)++;
         }
@@ -112,23 +105,19 @@ static void append(t_token **head, t_token **tail, t_token *tok)
 
 static t_token *lex_operator(char const *s, int *i)
 {
-    if (s[*i] == '&' && s[*i + 1] == '&')
-    {
+    if (s[*i] == '&' && s[*i + 1] == '&') {
         *i += 2;
         return (new_token(TOK_AND, tci_strdup("&&")));
     }
-    if (s[*i] == '|' && s[*i + 1] == '|')
-    {
+    if (s[*i] == '|' && s[*i + 1] == '|') {
         *i += 2;
         return (new_token(TOK_OR, tci_strdup("||")));
     }
-    if (s[*i] == '>' && s[*i + 1] == '>')
-    {
+    if (s[*i] == '>' && s[*i + 1] == '>') {
         *i += 2;
         return (new_token(TOK_REDIR_APPEND, tci_strdup(">>")));
     }
-    if (s[*i] == '<' && s[*i + 1] == '<')
-    {
+    if (s[*i] == '<' && s[*i + 1] == '<') {
         *i += 2;
         return (new_token(TOK_HEREDOC, tci_strdup("<<")));
     }
@@ -154,19 +143,16 @@ t_token *lex(char const *line)
     head = NULL;
     tail = NULL;
     i = 0;
-    while (line[i])
-    {
+    while (line[i]) {
         while (line[i] && tci_isspace((unsigned char)line[i]))
             i++;
         if (!line[i])
             break;
         if (is_operator_char(line[i]))
             tok = lex_operator(line, &i);
-        else
-        {
+        else {
             buf_init(&buf);
-            if (lex_word(line, &i, &buf) != 0)
-            {
+            if (lex_word(line, &i, &buf) != 0) {
                 free(buf.data);
                 free_tokens(head);
                 return (NULL);
@@ -182,8 +168,7 @@ void free_tokens(t_token *tokens)
 {
     t_token *next;
 
-    while (tokens)
-    {
+    while (tokens) {
         next = tokens->next;
         free(tokens->value);
         free(tokens);
