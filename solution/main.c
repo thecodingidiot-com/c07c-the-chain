@@ -16,8 +16,7 @@ static void trim_newline(char *line)
 
 static int is_blank(char const *line)
 {
-    while (*line)
-    {
+    while (*line) {
         if (!tci_isspace((unsigned char)*line))
             return (0);
         line++;
@@ -33,15 +32,13 @@ static void run_line(t_shell *sh, char const *line)
     if (is_blank(line))
         return;
     tokens = lex(line);
-    if (!tokens)
-    {
+    if (!tokens) {
         fprintf(stderr, "c07shell: syntax error: unterminated quote\n");
         sh->last_status = 2;
         return;
     }
     root = parse(tokens);
-    if (!root)
-    {
+    if (!root) {
         fprintf(stderr, "c07shell: syntax error\n");
         free_tokens(tokens);
         sh->last_status = 2;
@@ -62,13 +59,11 @@ int main(void)
     sh.last_status = 0;
     sh.running = 1;
     interactive = isatty(STDIN_FILENO);
-    while (sh.running)
-    {
+    while (sh.running) {
         if (interactive)
             tci_printf("$ ");
         line = tci_getline(STDIN_FILENO);
-        if (!line)
-        {
+        if (!line) {
             if (interactive)
                 tci_printf("exit\n");
             break;

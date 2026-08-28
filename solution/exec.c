@@ -42,11 +42,9 @@ static int resolve_heredoc(char const *delim)
 
     if (pipe(fd) < 0)
         return (-1);
-    while (1)
-    {
+    while (1) {
         line = tci_getline(STDIN_FILENO);
-        if (!line || heredoc_line_matches(line, delim))
-        {
+        if (!line || heredoc_line_matches(line, delim)) {
             free(line);
             break;
         }
@@ -73,8 +71,7 @@ static int resolve_redirs(t_redir *redirs, t_resolved *out, int *count)
     int fd;
 
     *count = 0;
-    while (redirs)
-    {
+    while (redirs) {
         if (redirs->type == TOK_HEREDOC)
             fd = resolve_heredoc(redirs->target);
         else if (redirs->type == TOK_REDIR_IN)
@@ -83,8 +80,7 @@ static int resolve_redirs(t_redir *redirs, t_resolved *out, int *count)
             fd = open(redirs->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
         else
             fd = open(redirs->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if (fd < 0)
-        {
+        if (fd < 0) {
             fprintf(stderr, "%s: cannot open\n", redirs->target);
             return (-1);
         }
@@ -101,8 +97,7 @@ static void apply_resolved(t_resolved *resolved, int count)
     int i;
 
     i = 0;
-    while (i < count)
-    {
+    while (i < count) {
         dup2(resolved[i].source_fd, resolved[i].target_fd);
         i++;
     }
@@ -113,8 +108,7 @@ static void close_resolved(t_resolved *resolved, int count)
     int i;
 
     i = 0;
-    while (i < count)
-    {
+    while (i < count) {
         close(resolved[i].source_fd);
         i++;
     }
@@ -133,13 +127,11 @@ static int exec_external(char **argv, t_redir *redirs)
     if (resolve_redirs(redirs, resolved, &count) < 0)
         return (1);
     pid = fork();
-    if (pid < 0)
-    {
+    if (pid < 0) {
         close_resolved(resolved, count);
         return (1);
     }
-    if (pid == 0)
-    {
+    if (pid == 0) {
         apply_resolved(resolved, count);
         execvp(argv[0], argv);
         fprintf(stderr, "%s: command not found\n", argv[0]);
@@ -199,16 +191,14 @@ static int exec_pipe(t_shell *sh, t_node *node)
     if (pipe(fd) < 0)
         return (1);
     left_pid = fork();
-    if (left_pid == 0)
-    {
+    if (left_pid == 0) {
         close(fd[0]);
         dup2(fd[1], STDOUT_FILENO);
         close(fd[1]);
         _exit(exec_node(sh, node->left));
     }
     right_pid = fork();
-    if (right_pid == 0)
-    {
+    if (right_pid == 0) {
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
