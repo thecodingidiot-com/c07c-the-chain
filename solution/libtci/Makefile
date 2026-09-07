@@ -1,7 +1,8 @@
 NAME    = libtci.a
 UTIL    = libtciutil.a
 CC      = gcc
-CFLAGS  = -Wall -Wextra -g -std=c99 -D BUFFER_SIZE=32
+CFLAGS  = -Wall -Wextra -Werror -std=c99 -D BUFFER_SIZE=32
+BUILD   = -g -O0
 AR      = ar rcs
 
 SRCS        = tci_memset.c tci_memcpy.c tci_memmove.c tci_memchr.c tci_bzero.c \
@@ -33,10 +34,10 @@ $(UTIL): $(UTIL_OBJS)
 	$(AR) $(UTIL) $(UTIL_OBJS)
 
 %.o: %.c libtci.h
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(BUILD) -c $< -o $@
 
 tciu_split.o: tciu_split.c libtciutil.h libtci.h
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(BUILD) -c $< -o $@
 
 clean:
 	rm -f $(OBJS) $(UTIL_OBJS)
